@@ -15,7 +15,8 @@ config_ = {
     'batch_size':100,
     'activation': 'sigmoid',
     'weight_initializations': 'xavier',
-    'weight_decay': 0
+    'weight_decay': 0,
+    'loss_function':'ce'
   }
 
 model_name = 'model'
@@ -59,7 +60,7 @@ test_input_neurons = np.array(test_input_neurons).T
 
 
 class NN(object):
-  def __init__(self, num_inputs, hidden_layers, num_outputs,batch_size,learning_rate, epoch,activation,weight_init,weight_decay):
+  def __init__(self, num_inputs, hidden_layers, num_outputs,batch_size,learning_rate, epoch,activation,weight_init,weight_decay,loss_function):
     self.num_inputs = num_inputs
     self.hidden_layers = hidden_layers
     self.num_outputs = num_outputs
@@ -71,6 +72,7 @@ class NN(object):
     self.activation = activation
     self.weight_init = weight_init
     self.weight_decay = weight_decay
+    self.loss_function = loss_function
     # nuerons in layers
     layers = [num_inputs] + hidden_layers + [num_outputs]
 
@@ -183,12 +185,12 @@ class NN(object):
     one_hot_Y = one_hot_Y
     return one_hot_Y
 
-  def backward_prop(self, h, a, y_hat, y, loss_function):
+  def backward_prop(self, h, a, y_hat, y):
     eY = self.one_hot(y)
     #print(y_hat)
-    if loss_function == 'ce':
+    if self.loss_function == 'ce':
       d_al_theta = y_hat - eY.T
-    elif loss_function == 'sq':
+    elif self.loss_function == 'sq':
       d_al_theta = (y_hat - eY.T) * y_hat * (1 - y_hat)  
 
     self.d_weights = {}
@@ -259,7 +261,7 @@ class NN(object):
     for j in range(epoch):
       output_h, output_a, y_hat = self.forward_prop(input_neurons)
       #print(len(output_h), len(output_a), len(y_hat))
-      d_weights, d_bias = self.backward_prop(output_h, output_a, y_hat, train_labels, 'ce')
+      d_weights, d_bias = self.backward_prop(output_h, output_a, y_hat, train_labels)
       for i in range(len(d_weights)):
         self.weights[i] = self.weights[i] - learning_rate * d_weights[i]
         self.bias[i] = self.bias[i] - learning_rate * d_bias[i]
@@ -273,7 +275,7 @@ class NN(object):
 
       for i in range(input_neurons.shape[1]):
         output_h, output_a, y_hat = self.forward_prop(input_neurons[:,i].reshape((input_neurons.shape[0],1)))
-        d_weights, d_bias = self.backward_prop(output_h, output_a, y_hat, np.array([train_labels[i]]), 'ce')
+        d_weights, d_bias = self.backward_prop(output_h, output_a, y_hat, np.array([train_labels[i]]))
         
 
         for d in range(len(d_weights)):
@@ -292,9 +294,9 @@ class NN(object):
         for i in range(self.iterations):
           output_h, output_a, y_hat = self.forward_prop(input_neurons[:,(i*self.batch_size): min((((i+1)*self.batch_size)-1),input_neurons.shape[1]-1)])
           if(self.batch_size==1):
-            d_weights, d_bias = self.backward_prop(output_h, output_a, y_hat, np.array([train_labels[i]]), 'ce')
+            d_weights, d_bias = self.backward_prop(output_h, output_a, y_hat, np.array([train_labels[i]]))
           else:
-            d_weights, d_bias = self.backward_prop(output_h, output_a, y_hat, train_labels[(i*self.batch_size): min((((i+1)*self.batch_size)-1),input_neurons.shape[1]-1)], 'ce')
+            d_weights, d_bias = self.backward_prop(output_h, output_a, y_hat, train_labels[(i*self.batch_size): min((((i+1)*self.batch_size)-1),input_neurons.shape[1]-1)])
 
           if(j==0 and i==0):
             for d in range(len(d_weights)):
@@ -321,9 +323,9 @@ class NN(object):
         for i in range(self.iterations):
           output_h, output_a, y_hat = self.forward_prop(input_neurons[:,(i*self.batch_size): min((((i+1)*self.batch_size)-1),input_neurons.shape[1]-1)])
           if(self.batch_size==1):
-            d_weights, d_bias = self.backward_prop(output_h, output_a, y_hat, np.array([train_labels[i]]), 'ce')
+            d_weights, d_bias = self.backward_prop(output_h, output_a, y_hat, np.array([train_labels[i]]))
           else:
-            d_weights, d_bias = self.backward_prop(output_h, output_a, y_hat, train_labels[(i*self.batch_size): min((((i+1)*self.batch_size)-1),input_neurons.shape[1]-1)], 'ce')
+            d_weights, d_bias = self.backward_prop(output_h, output_a, y_hat, train_labels[(i*self.batch_size): min((((i+1)*self.batch_size)-1),input_neurons.shape[1]-1)])
 
           if(j!=0 or i!=0):
             for d in range(len(d_weights)):
@@ -332,9 +334,9 @@ class NN(object):
 
           output_h, output_a, y_hat = self.forward_prop(input_neurons[:,(i*self.batch_size): min((((i+1)*self.batch_size)-1),input_neurons.shape[1]-1)])
           if(self.batch_size==1):
-            d_weights, d_bias = self.backward_prop(output_h, output_a, y_hat, np.array([train_labels[i]]), 'ce')
+            d_weights, d_bias = self.backward_prop(output_h, output_a, y_hat, np.array([train_labels[i]]))
           else:
-            d_weights, d_bias = self.backward_prop(output_h, output_a, y_hat, train_labels[(i*self.batch_size): min((((i+1)*self.batch_size)-1),input_neurons.shape[1]-1)], 'ce')
+            d_weights, d_bias = self.backward_prop(output_h, output_a, y_hat, train_labels[(i*self.batch_size): min((((i+1)*self.batch_size)-1),input_neurons.shape[1]-1)])
 
           if(j==0 and i==0):
             for d in range(len(d_weights)):
@@ -361,9 +363,9 @@ class NN(object):
         for i in range(self.iterations):
           output_h, output_a, y_hat = self.forward_prop(input_neurons[:,(i*self.batch_size): min((((i+1)*self.batch_size)-1),input_neurons.shape[1]-1)])
           if(self.batch_size==1):
-            d_weights, d_bias = self.backward_prop(output_h, output_a, y_hat, np.array([train_labels[i]]), 'ce')
+            d_weights, d_bias = self.backward_prop(output_h, output_a, y_hat, np.array([train_labels[i]]))
           else:
-            d_weights, d_bias = self.backward_prop(output_h, output_a, y_hat, train_labels[(i*self.batch_size): min((((i+1)*self.batch_size)-1),input_neurons.shape[1]-1)], 'ce')
+            d_weights, d_bias = self.backward_prop(output_h, output_a, y_hat, train_labels[(i*self.batch_size): min((((i+1)*self.batch_size)-1),input_neurons.shape[1]-1)])
 
           if(j!=0 or i!=0):
             for d in range(len(d_weights)):
@@ -394,9 +396,9 @@ class NN(object):
         for i in range(self.iterations):
           output_h, output_a, y_hat = self.forward_prop(input_neurons[:,(i*self.batch_size): min((((i+1)*self.batch_size)-1),input_neurons.shape[1]-1)])
           if(self.batch_size==1):
-            d_weights, d_bias = self.backward_prop(output_h, output_a, y_hat, np.array([train_labels[i]]), 'ce')
+            d_weights, d_bias = self.backward_prop(output_h, output_a, y_hat, np.array([train_labels[i]]))
           else:
-            d_weights, d_bias = self.backward_prop(output_h, output_a, y_hat, train_labels[(i*self.batch_size): min((((i+1)*self.batch_size)-1),input_neurons.shape[1]-1)], 'ce')
+            d_weights, d_bias = self.backward_prop(output_h, output_a, y_hat, train_labels[(i*self.batch_size): min((((i+1)*self.batch_size)-1),input_neurons.shape[1]-1)])
           
           if(j!=0 or i!=0):
             for d in range(len(d_weights)):
@@ -439,9 +441,9 @@ class NN(object):
         for i in range(self.iterations):
           output_h, output_a, y_hat = self.forward_prop(input_neurons[:,(i*self.batch_size): min((((i+1)*self.batch_size)-1),input_neurons.shape[1]-1)])
           if(self.batch_size==1):
-            d_weights, d_bias = self.backward_prop(output_h, output_a, y_hat, np.array([train_labels[i]]), 'ce')
+            d_weights, d_bias = self.backward_prop(output_h, output_a, y_hat, np.array([train_labels[i]]))
           else:
-            d_weights, d_bias = self.backward_prop(output_h, output_a, y_hat, train_labels[(i*self.batch_size): min((((i+1)*self.batch_size)-1),input_neurons.shape[1]-1)], 'ce')
+            d_weights, d_bias = self.backward_prop(output_h, output_a, y_hat, train_labels[(i*self.batch_size): min((((i+1)*self.batch_size)-1),input_neurons.shape[1]-1)])
           if(j!=0 or i!=0):
             for d in range(len(d_weights)):
               w_mt[d]= beta1 * w_mt[d] 
@@ -458,9 +460,9 @@ class NN(object):
 
               output_h, output_a, y_hat = self.forward_prop(input_neurons[:,(i*self.batch_size): min((((i+1)*self.batch_size)-1),input_neurons.shape[1]-1)])
               if(self.batch_size==1):
-                d_weights, d_bias = self.backward_prop(output_h, output_a, y_hat, np.array([train_labels[i]]), 'ce')
+                d_weights, d_bias = self.backward_prop(output_h, output_a, y_hat, np.array([train_labels[i]]))
               else:
-                d_weights, d_bias = self.backward_prop(output_h, output_a, y_hat, train_labels[(i*self.batch_size): min((((i+1)*self.batch_size)-1),input_neurons.shape[1]-1)], 'ce')
+                d_weights, d_bias = self.backward_prop(output_h, output_a, y_hat, train_labels[(i*self.batch_size): min((((i+1)*self.batch_size)-1),input_neurons.shape[1]-1)])
 
 
               w_mt[d] += (1-beta1) * d_weights[d]
@@ -513,12 +515,13 @@ def train():
   activation = config_.get('activation')#
   weight_init = config_.get('weight_init')#
   weight_decay = config_.get('weight_decay')
+  loss_function = config_.get('loss_function')
 
 
 
 
   
-  ffnn = NN(len(train_input_neurons), [size_hidden_layer]*no_hidden_layer, no_classes,batch_size,learning_rate,epoch,activation,weight_init,weight_decay)
+  ffnn = NN(len(train_input_neurons), [size_hidden_layer]*no_hidden_layer, no_classes,batch_size,learning_rate,epoch,activation,weight_init,weight_decay,loss_function)
   
   if optimizer == 'sgd':
     weight, bias=ffnn.sgd(train_input_neurons, learning_rate, epoch)
