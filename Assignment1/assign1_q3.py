@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import math
 import copy
 from sklearn.model_selection import train_test_split 
+import pickle
 
 config_ = {
     'learning_rate': 0.01,
@@ -16,6 +17,8 @@ config_ = {
     'weight_initializations': 'xavier',
     'weight_decay': 0
   }
+
+model_name = 'model'
 
 gamma = 0.9
 beta = 0.9
@@ -491,7 +494,11 @@ class NN(object):
         self.logging(j) 
 
     return self.weights, self.bias
-
+def save_wb(weights, biases):
+  with open(model_name+'-weights.pickle', 'wb') as f:
+    pickle.dump(weights, f, pickle.HIGHEST_PROTOCOL)
+  with open(model_name+'-bias.pickle', 'wb') as f:
+    pickle.dump(biases, f, pickle.HIGHEST_PROTOCOL)
 
 def train():
   
@@ -529,8 +536,9 @@ def train():
     weight, bias = ffnn.nadam(train_input_neurons,beta1,beta2,epsilon)
   else:
     print('Invalid optimizer. Choose from sgd, momentum, nesterov, rmsprop, adam,gd')
-
-
+   
+  save_wb(weight, bias)
+  
   print("validate training_____________________________________________________________________________________________________________")
   ffnn.test_prediction(train_input_neurons[:, 0:1], train_labels[0])
   ffnn.test_prediction(train_input_neurons[:, 1:2], train_labels[1])
