@@ -5,6 +5,7 @@ import math
 import copy
 from sklearn.model_selection import train_test_split 
 import pickle
+import wandb
 
 config_ = {
     'learning_rate': 0.01,
@@ -253,6 +254,12 @@ class NN(object):
     val_accuracy = self.get_accuracy(val_predictions, val_labels)
     loss_valid = self.cross_entropy(val_labels,y_hat)
     print("epoch______{} :   {}".format(j, accuracy))
+    wandb.log({
+      "epoch": j,
+      "loss": loss_train,
+      "accuracy": accuracy,
+      "val_loss": loss_valid,
+      "val_accuracy": val_accuracy})
 
 
 
@@ -504,17 +511,19 @@ def save_wb(weights, biases):
 
 def train():
   
-  
+  wandb.init(config=config_, magic=True,reinit = True)
+  wandb.run.name = 'bs-'+str(wandb.config.batch_size)+'-lr-'+ str(wandb.config.learning_rate)+'-ep-'+str(wandb.config.epochs)+ '-op-'+str(wandb.config.optimizer)+ '-nhl-'+str(wandb.config.no_hidden_layer)+'-shl-'+str(wandb.config.size_hidden_layer)+ '-act-'+str(wandb.config.activation)+'-wd-'+str(wandb.config.weight_decay)+'-wi-'+str(wandb.config.weight_initializations)
 
-  batch_size = config_.get('batch_size')
-  learning_rate = config_.get('learning_rate')
-  epoch = config_.get('epochs') 
-  optimizer = config_.get('optimizer')
-  no_hidden_layer = config_.get('no_hidden_layer')#
-  size_hidden_layer = config_.get('size_hidden_layer')#
-  activation = config_.get('activation')#
-  weight_init = config_.get('weight_init')#
-  weight_decay = config_.get('weight_decay')
+
+  batch_size = wandb.config.batch_size 
+  learning_rate = wandb.config.learning_rate 
+  epoch = wandb.config.epochs 
+  optimizer = wandb.config.optimizer 
+  no_hidden_layer = wandb.config.no_hidden_layer 
+  size_hidden_layer = wandb.config.size_hidden_layer 
+  activation = wandb.config.activation 
+  weight_init = wandb.config.weight_initializations 
+  weight_decay = wandb.config.weight_decay 
   loss_function = config_.get('loss_function')
 
 
