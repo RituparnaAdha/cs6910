@@ -8,19 +8,19 @@ import pickle
 import wandb
 
 config_ = {
-    'learning_rate': 0.01,
-    'epochs': 1,
-    'no_hidden_layer': 3,
-    'size_hidden_layer':128,
-    'optimizer': 'rmsprop',
-    'batch_size':100,
-    'activation': 'sigmoid',
-    'weight_initializations': 'xavier',
-    'weight_decay': 0,
+    'learning_rate': 0.001,
+    'epochs': 10,
+    'no_hidden_layers': 3,
+    'size_hidden_layers':128,
+    'optimizer': 'adam',
+    'batch_size':128,
+    'activation': 'Relu',
+    'weight_initializations': 'random',
+    'weight_decay': 0.0005,
     'loss_function':'ce'
   }
 
-model_name = 'model'
+model_name = 'Assignement1/model/model'
 
 gamma = 0.9
 beta = 0.9
@@ -61,8 +61,8 @@ test_input_neurons = np.array(test_input_neurons).T
 
 
 class NN(object):
-  def __init__(self, num_inputs, hidden_layers, num_outputs,batch_size,learning_rate, epoch,activation,weight_init,weight_decay,loss_function):
-    self.num_inputs = num_inputs
+  def __init__(self, hidden_layers, num_outputs,batch_size,learning_rate, epoch,activation,weight_init,weight_decay,loss_function):
+    self.num_inputs = len(train_input_neurons)
     self.hidden_layers = hidden_layers
     self.num_outputs = num_outputs
     self.num_classes = num_outputs
@@ -74,10 +74,9 @@ class NN(object):
     self.weight_init = weight_init
     self.weight_decay = weight_decay
     self.loss_function = loss_function
-    # nuerons in layers
     layers = [num_inputs] + hidden_layers + [num_outputs]
 
-    # randomized weights and biases
+    np.random.seed(0)
     self.weights = []
     self.bias = []
     if self.weight_init == 'random': 
@@ -96,9 +95,7 @@ class NN(object):
     
     x = x.T
     y = np.zeros(x.shape)
-    # print("\n____________________________{}".format(y.shape))
     for i in range(y.shape[0]):
-      # print(np.exp(-x[i]))
       y[i] = 1.0 / (1 + np.exp(-x[i]))
     
     return y.T
@@ -157,7 +154,7 @@ class NN(object):
     return y.T
 
   def forward_prop(self, X):
-    hiden_operation = 1;
+    hiden_operation = 1
     self.ai = {}
     self.hi = {}
     self.hi[hiden_operation - 1] = X
@@ -188,7 +185,6 @@ class NN(object):
 
   def backward_prop(self, h, a, y_hat, y):
     eY = self.one_hot(y)
-    #print(y_hat)
     if self.loss_function == 'ce':
       d_al_theta = y_hat - eY.T
     elif self.loss_function == 'sq':
@@ -203,8 +199,8 @@ class NN(object):
     L = len(self.hidden_layers)
     self.d_a[L+1] = d_al_theta
     
-    # hidden layers gradient
-    for k in range(L, -1, -1):#2,1,0
+    
+    for k in range(L, -1, -1):
      
       self.d_weights[k] = ((1/no_of_samples) * self.d_a[k+1].dot(h[k].T)) + (self.weight_decay *  self.weights[k])
       self.d_bias[k] = ((1/no_of_samples) * np.sum(self.d_a[k+1], axis = 1, keepdims = True)) + (self.weight_decay *self.bias[k] )
@@ -218,7 +214,6 @@ class NN(object):
     return self.d_weights, self.d_bias
       
   def get_prediction(self, y):
-    # print(np.argmax(y, 1))
     return np.argmax(y, 0)
   
   def get_accuracy(self, prediction, y):
@@ -228,13 +223,14 @@ class NN(object):
     _, _, y_hatt = self.forward_prop(x)
     predictions = self.get_prediction(y_hatt)
     return predictions
-    # return y_hatt, predictions
 
   def cross_entropy(self, y,yhat):
     return (-sum([math.log(yhat[y[i],i]) for i in range(len(y))])/len(y)) + (self.weight_decay*0.5 * (np.sum([np.linalg.norm(self.weights[i]) for i in range(len(self.weights))])))
 
+  def mse(self, y,yhat):
+    return (-sum([np.sum(np.square()) for i in range(len(y))])/len(y)) + (self.weight_decay*0.5 * (np.sum([np.linalg.norm(self.weights[i]) for i in range(len(self.weights))])))
+
   def test_prediction(self, current_image, y):
-    # current_image = X_train[:, index, None]
     prediction = self.make_predictions(current_image)
     label = y
     print("Prediction: ", prediction)
@@ -248,10 +244,17 @@ class NN(object):
     output_h, output_a, y_hat = self.forward_prop(train_input_neurons)
     predictions = self.get_prediction(y_hat)
     accuracy = self.get_accuracy(predictions, train_labels)
-    loss_train = self.cross_entropy(train_labels,y_hat)
+    if(self.loss_function =='ce'):
+        loss_train = self.cross_entropy(train_labels,y_hat)
+    elif self.loss_function =='sq':
+        loss_train = self.mse(train_labels,y_hat)
     output_h, output_a, y_hat = self.forward_prop(val_input_neurons)
     val_predictions = self.get_prediction(y_hat)
     val_accuracy = self.get_accuracy(val_predictions, val_labels)
+    if(self.loss_function =='ce'):
+        loss_valid = self.cross_entropy(val_labels,y_hat)
+    elif self.loss_function =='sq':
+        loss_valid = self.mse(val_labels,y_hat)
     loss_valid = self.cross_entropy(val_labels,y_hat)
     print("epoch______{} :   {}".format(j, accuracy))
     wandb.log({
@@ -267,7 +270,6 @@ class NN(object):
   
     for j in range(epoch):
       output_h, output_a, y_hat = self.forward_prop(input_neurons)
-      #print(len(output_h), len(output_a), len(y_hat))
       d_weights, d_bias = self.backward_prop(output_h, output_a, y_hat, train_labels)
       for i in range(len(d_weights)):
         self.weights[i] = self.weights[i] - learning_rate * d_weights[i]
@@ -417,7 +419,6 @@ class NN(object):
               vt_hat = w_vt[d]/(1-np.power(beta2,(j*self.iterations)+i+1))
               bmt_hat = b_mt[d]/(1-np.power(beta1,(j*self.iterations)+i+1))
               bvt_hat = b_vt[d]/(1-np.power(beta2,(j*self.iterations)+i+1))
-              #print(mt_hat, vt_hat, bmt_hat, bvt_hat)
               self.weights[d] = self.weights[d] - (self.learning_rate *(1/np.sqrt(vt_hat+epsilon))* mt_hat)
               self.bias[d] = self.bias[d] - (self.learning_rate *(1/np.sqrt(bvt_hat+epsilon))* bmt_hat)
           else:
@@ -432,7 +433,7 @@ class NN(object):
               bvt_hat = b_vt[d]/(1-np.power(beta2,(j*self.iterations)+i+1))
               self.weights[d] = self.weights[d] - (self.learning_rate *(1/np.sqrt(vt_hat+epsilon))* mt_hat)
               self.bias[d] = self.bias[d] - (self.learning_rate *(1/np.sqrt(bvt_hat+epsilon))* bmt_hat)
-        #print("epoch______{} :   {}".format(j, accuracy))
+        
         self.logging(j)
                   
 
@@ -512,15 +513,15 @@ def save_wb(weights, biases):
 def train():
   
   wandb.init(config=config_, magic=True,reinit = True)
-  wandb.run.name = 'bs-'+str(wandb.config.batch_size)+'-lr-'+ str(wandb.config.learning_rate)+'-ep-'+str(wandb.config.epochs)+ '-op-'+str(wandb.config.optimizer)+ '-nhl-'+str(wandb.config.no_hidden_layer)+'-shl-'+str(wandb.config.size_hidden_layer)+ '-act-'+str(wandb.config.activation)+'-wd-'+str(wandb.config.weight_decay)+'-wi-'+str(wandb.config.weight_initializations)
+  wandb.run.name = 'bs-'+str(wandb.config.batch_size)+'-lr-'+ str(wandb.config.learning_rate)+'-ep-'+str(wandb.config.epochs)+ '-op-'+str(wandb.config.optimizer)+ '-nhl-'+str(wandb.config.no_hidden_layers)+'-shl-'+str(wandb.config.size_hidden_layers)+ '-act-'+str(wandb.config.activation)+'-wd-'+str(wandb.config.weight_decay)+'-wi-'+str(wandb.config.weight_initializations)
 
 
   batch_size = wandb.config.batch_size 
   learning_rate = wandb.config.learning_rate 
   epoch = wandb.config.epochs 
   optimizer = wandb.config.optimizer 
-  no_hidden_layer = wandb.config.no_hidden_layer 
-  size_hidden_layer = wandb.config.size_hidden_layer 
+  no_hidden_layer = wandb.config.no_hidden_layers 
+  size_hidden_layer = wandb.config.size_hidden_layers 
   activation = wandb.config.activation 
   weight_init = wandb.config.weight_initializations 
   weight_decay = wandb.config.weight_decay 
@@ -531,7 +532,7 @@ def train():
 
   
   ffnn = NN(len(train_input_neurons), [size_hidden_layer]*no_hidden_layer, no_classes,batch_size,learning_rate,epoch,activation,weight_init,weight_decay,loss_function)
-  
+  print( [size_hidden_layer]*no_hidden_layer)
   if optimizer == 'sgd':
     weight, bias=ffnn.sgd(train_input_neurons, learning_rate, epoch)
   elif optimizer == 'momentum':
@@ -550,17 +551,13 @@ def train():
     print('Invalid optimizer. Choose from sgd, momentum, nesterov, rmsprop, adam,gd')
    
   save_wb(weight, bias)
-  
-  print("validate training_____________________________________________________________________________________________________________")
-  ffnn.test_prediction(train_input_neurons[:, 0:1], train_labels[0])
-  ffnn.test_prediction(train_input_neurons[:, 1:2], train_labels[1])
-
-  print("test training--------------------------------------------------------------------")
-  ffnn.test_prediction(test_input_neurons[:, 0:1], test_labels[0])
 
   test_prediction = ffnn.make_predictions(test_input_neurons)
   test_accuracy = ffnn.get_accuracy(test_prediction, test_labels)
   print("test accuracy: {}".format(test_accuracy))
+  
+  
+  
     
 if __name__ == "__main__":
   train()
