@@ -14,13 +14,13 @@ config_ = {
     'size_hidden_layers':128,
     'optimizer': 'adam',
     'batch_size':128,
-    'activation': 'Relu',
+    'activation': 'tanh',
     'weight_initializations': 'random',
-    'weight_decay': 0.0005,
+    'weight_decay': 0,
     'loss_function':'ce'
   }
 
-model_name = 'Assignement1/model/model'
+model_name = 'Assignment1/model/'
 
 gamma = 0.9
 beta = 0.9
@@ -74,7 +74,7 @@ class NN(object):
     self.weight_init = weight_init
     self.weight_decay = weight_decay
     self.loss_function = loss_function
-    layers = [num_inputs] + hidden_layers + [num_outputs]
+    layers = [self.num_inputs] + hidden_layers + [self.num_outputs]
 
     np.random.seed(0)
     self.weights = []
@@ -228,7 +228,7 @@ class NN(object):
     return (-sum([math.log(yhat[y[i],i]) for i in range(len(y))])/len(y)) + (self.weight_decay*0.5 * (np.sum([np.linalg.norm(self.weights[i]) for i in range(len(self.weights))])))
 
   def mse(self, y,yhat):
-    return (-sum([np.sum(np.square()) for i in range(len(y))])/len(y)) + (self.weight_decay*0.5 * (np.sum([np.linalg.norm(self.weights[i]) for i in range(len(self.weights))])))
+    return (np.sum(np.square(yhat- (self.one_hot(y)).T)))/len(y) + (self.weight_decay*0.5 * (np.sum([np.linalg.norm(self.weights[i]) for i in range(len(self.weights))])))
 
   def test_prediction(self, current_image, y):
     prediction = self.make_predictions(current_image)
@@ -505,15 +505,15 @@ class NN(object):
 
     return self.weights, self.bias
 def save_wb(weights, biases):
-  with open(model_name+'-weights.pickle', 'wb') as f:
+  with open(model_name+'model-weights.pickle', 'wb') as f:
     pickle.dump(weights, f, pickle.HIGHEST_PROTOCOL)
-  with open(model_name+'-bias.pickle', 'wb') as f:
+  with open(model_name+'model-bias.pickle', 'wb') as f:
     pickle.dump(biases, f, pickle.HIGHEST_PROTOCOL)
 
 def train():
   
   wandb.init(config=config_, magic=True,reinit = True)
-  wandb.run.name = 'bs-'+str(wandb.config.batch_size)+'-lr-'+ str(wandb.config.learning_rate)+'-ep-'+str(wandb.config.epochs)+ '-op-'+str(wandb.config.optimizer)+ '-nhl-'+str(wandb.config.no_hidden_layers)+'-shl-'+str(wandb.config.size_hidden_layers)+ '-act-'+str(wandb.config.activation)+'-wd-'+str(wandb.config.weight_decay)+'-wi-'+str(wandb.config.weight_initializations)
+  wandb.run.name = 'bs-'+str(wandb.config.batch_size)+'-lr-'+ str(wandb.config.learning_rate)+'-ep-'+str(wandb.config.epochs)+ '-op-'+str(wandb.config.optimizer)+ '-nhl-'+str(wandb.config.no_hidden_layers)+'-shl-'+str(wandb.config.size_hidden_layers)+ '-act-'+str(wandb.config.activation)+'-wd-'+str(wandb.config.weight_decay)+'-wi-'+str(wandb.config.weight_initializations)+'-lf-'+str(wandb.config.loss_function)
 
 
   batch_size = wandb.config.batch_size 
@@ -525,14 +525,14 @@ def train():
   activation = wandb.config.activation 
   weight_init = wandb.config.weight_initializations 
   weight_decay = wandb.config.weight_decay 
-  loss_function = config_.get('loss_function')
+  loss_function = wandb.config.loss_function
 
 
 
 
   
-  ffnn = NN(len(train_input_neurons), [size_hidden_layer]*no_hidden_layer, no_classes,batch_size,learning_rate,epoch,activation,weight_init,weight_decay,loss_function)
-  print( [size_hidden_layer]*no_hidden_layer)
+  ffnn = NN( [size_hidden_layer]*no_hidden_layer, no_classes,batch_size,learning_rate,epoch,activation,weight_init,weight_decay,loss_function)
+  
   if optimizer == 'sgd':
     weight, bias=ffnn.sgd(train_input_neurons, learning_rate, epoch)
   elif optimizer == 'momentum':
