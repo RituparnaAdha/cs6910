@@ -7,11 +7,19 @@ Original file is located at
     https://colab.research.google.com/drive/11qqwA0YOiMlSWMK9Gka-2ipjnUr4G2DJ
 """
 
+!pip install wandb
+
+!wandb login
+
+# Inside my model training code
+import wandb
+wandb.init(project='assignment_1', entity='shreekanti')
+
+
+
 from keras.datasets import fashion_mnist
 import numpy as np
 import matplotlib.pyplot as plt
-
-
 
 (train_images, train_labels), (test_images, test_labels) = fashion_mnist.load_data()
 
@@ -26,7 +34,7 @@ print(test_labels)
 print("Unique classes")
 print(list(set(test_labels)))
 
-train_images[0]
+# train_images[0]
 
 classes = {0 : "T-shirt_top", 1: "Trouser", 2: "Pullover", 3: "Dress", 4: "Coat", 5: "Sandal", 6: "Shirt", 7: "Sneaker", 8: "Bag", 9: "Ankle Boot"}
 
@@ -41,7 +49,10 @@ for i in list(range(len(train_labels))):
     indexes.remove(train_labels[i])
 plt.figure(figsize=(10,5))
 print("First image of each class 0 1 .. 9")
-indexes = list(set(train_labels))
+# indexes = list(set(train_labels))
+for i in list(range(len(images))):
+  wandb.log({"One image from each class": [wandb.Image(images[i], caption=classes[image_labels[i]])]})
+
 for i in list(range(len(images))):
   plt.subplot(2,5,i+1)
   plt.xticks([])
@@ -64,7 +75,9 @@ for i in list(range(len(test_labels))):
     indexes.remove(test_labels[i])
 plt.figure(figsize=(10,5))
 print("First image of each class 0 1 .. 9")
-indexes = list(set(test_labels))
+# indexes = list(set(test_labels))
+for i in list(range(len(images))):
+  wandb.log({"One image from each class(For test images)": [wandb.Image(images[i], caption=classes[image_labels[i]])]})
 for i in list(range(len(images))):
   plt.subplot(2,5,i+1)
   plt.xticks([])
@@ -74,5 +87,5 @@ for i in list(range(len(images))):
   plt.xlabel(classes[image_labels[i]])
 plt.show()
 
-
+wandb.finish()
 
