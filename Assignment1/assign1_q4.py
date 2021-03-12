@@ -4,7 +4,7 @@ from assign1_q3 import train
 if __name__ == '__main__':
     sweep_config = {
         'method': 'bayes',
-        "name": "assignement1-Sweep2",
+        "name": "assignement1-Sweep",
         'metric':{
             'goal': 'maximize',
             'name': 'val_accuracy'
@@ -40,5 +40,5 @@ if __name__ == '__main__':
 
     }
     }
-    sweep_id = wandb.sweep(sweep_config,project ='assignement1-dummy')
+    sweep_id = wandb.sweep(sweep_config,project ='assignement1')
     wandb.agent(sweep_id, function=train)
