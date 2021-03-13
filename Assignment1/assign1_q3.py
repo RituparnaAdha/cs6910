@@ -1,4 +1,3 @@
-
 from keras.datasets import fashion_mnist
 import numpy as np
 import matplotlib.pyplot as plt
@@ -13,7 +12,7 @@ import os
 
 config_ = {
     'learning_rate': 0.001,
-    'epochs': 1,
+    'epochs': 10,
     'no_hidden_layers': 3,
     'size_hidden_layers':128,
     'optimizer': 'adam',
@@ -66,7 +65,7 @@ test_input_neurons = np.array(test_input_neurons).T
 
 
 class NN(object):
-  def __init__(self, hidden_layers, num_outputs,batch_size,learning_rate, epoch,activation,weight_init,weight_decay,loss_function):
+  def __init__(self, hidden_layers=[config_['size_hidden_layers']*config_['no_hidden_layers']], num_outputs=no_classes,batch_size=config_['batch_size'],learning_rate=config_['learning_rate'], epoch=config_['epochs'],activation=config_['activation'],weight_init=config_['weight_initializations'],weight_decay=config_['weight_decay'],loss_function=config_['loss_function']):
     self.num_inputs = len(train_input_neurons)
     self.hidden_layers = hidden_layers
     self.num_outputs = num_outputs
