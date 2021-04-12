@@ -21,6 +21,7 @@ import wandb
 from wandb.keras import WandbCallback
 from keras.callbacks import EarlyStopping
 from keras.regularizers import l2
+from keras.models import model_from_json
 
 
 
@@ -156,7 +157,21 @@ class pretrained_model():
       self.model.fit_generator(self.train,steps_per_epoch =steps_per_epoch,epochs=self.epochs,verbose=1,validation_data=self.val,validation_steps=validation_steps,callbacks=[es])#,callbacks=[WandbCallback()])
 
   def save_model(self):
+    try:
+      os.mkdir(model_folder)
+    except:
+      pass
+    model_json = self.model.to_json()
+    with open(model_folder+"/model.json", "w") as json_file:
+      json_file.write(model_json)
     self.model.save(model_folder+'/cnn.h5')
+
+  def load_model(self):
+    json_file = open(model_folder+'/model.json', 'r')
+    loaded_model_json = json_file.read()
+    json_file.close()
+    self.model = model_from_json(loaded_model_json)
+    self.model.load_weights(model_folder+"/cnn.h5")
 
   def predict(self):
     score=self.model.evaluate(self.test_it,verbose=0)
@@ -166,6 +181,8 @@ def train():
   wandb.init(config=configuration, magic=True,reinit = True)
   wandb.run.name = 'mn-'+wandb.config.model_name+'-no_layers_to_freeze-'+str(wandb.config.no_layers_to_freeze)+'-epochs-'+str(wandb.config.epochs)+'-dense-layers-'+str(wandb.config.number_dense_layers)+'-op-'+str(wandb.config.optimizer)
   print(wandb.run.name)
+
+
   model_name = wandb.config.model_name #  replace value of model with either of the 4 - xception,inceptionv3, inceptionresnetv2, resnet
   num_classes = wandb.config.num_classes
   no_layers_to_freeze = wandb.config.no_layers_to_freeze
