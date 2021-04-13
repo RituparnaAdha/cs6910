@@ -40,9 +40,9 @@ configuration = {
     "no_layers_to_freeze" :0,
     "epochs": 15,
     "learning_rate": 0.001,
-    "optimizer": 'momentum',
+    "optimizer": 'momentum',#sgd,nesterov,adam,nadam,rmsprop
     "number_dense_layers": 5,
-    "activation" : 'relu',
+    "activation" : 'relu',#sigmoid,tanh
     "dropout":0.1,
     "l2": 0
 
@@ -172,6 +172,30 @@ class pretrained_model():
     json_file.close()
     self.model = model_from_json(loaded_model_json)
     self.model.load_weights(model_folder+"/cnn.h5")
+    if(self.optimizer == 'rmsprop'):
+      self.model.compile(loss='categorical_crossentropy',
+              optimizer=optimizers.RMSprop(self.lr),
+              metrics=['accuracy'])
+    elif(self.optimizer == 'adam'):
+      self.model.compile(loss='categorical_crossentropy',
+              optimizer=optimizers.Adam(self.lr),
+              metrics=['accuracy'])
+    elif(self.optimizer == 'nadam'):
+      self.model.compile(loss='categorical_crossentropy',
+              optimizer=optimizers.Nadam(self.lr),
+              metrics=['accuracy'])
+    elif(self.optimizer == 'sgd'):
+      self.model.compile(loss='categorical_crossentropy',
+              optimizer=optimizers.SGD(self.lr),
+              metrics=['accuracy'])
+    elif(self.optimizer == 'momentum'):
+      self.model.compile(loss='categorical_crossentropy',
+              optimizer=optimizers.SGD(self.lr,momentum = 0.9),
+              metrics=['accuracy'])
+    elif(self.optimizer == 'nesterov'):
+      self.model.compile(loss='categorical_crossentropy',
+              optimizer=optimizers.SGD(self.lr,momentum = 0.9, nesterov=True),
+              metrics=['accuracy'])
 
   def predict(self):
     score=self.model.evaluate(self.test_it,verbose=0)
