@@ -9,6 +9,7 @@ The goal of this assignment is threefold: (i) train a CNN model from scratch and
 ```
 Python 3.7.10
 Numpy 1.19.5
+keras 2.4.3
 ```
 ## Dataset
 We have used the iNaturalist Dataset ("https://storage.googleapis.com/wandb_datasets/nature_12K.zip").
