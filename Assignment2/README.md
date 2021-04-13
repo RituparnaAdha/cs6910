@@ -24,6 +24,8 @@ We have used the iNaturalist Dataset ("https://storage.googleapis.com/wandb_data
   pip install wandb
   pip install numpy
   pip install keras
+  pip install opencv-python
+  pip install scikit-learn
   ```
 # Part A
 
@@ -66,6 +68,8 @@ The code for question 3 can be found [here](https://github.com/RituparnaAdha/cs6
 ## Evaluate
 
  - Code to check the test accuracy of the model
+ - Download artifacts from 'https://drive.google.com/file/d/1xF4Ro_EbUusGe9wQJGcnrsf5WUVW1x4C/view?usp=sharing'
+ - place it in Assignment2/partb/model
 ```
 cd Assignment2
 cd partb

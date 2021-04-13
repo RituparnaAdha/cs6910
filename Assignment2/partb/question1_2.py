@@ -101,7 +101,7 @@ class pretrained_model():
     elif (self.model_name =='inceptionv3'):
         model = InceptionV3(weights='imagenet',include_top=False,input_shape=IMG_DIM)
     elif (self.model_name =='inceptionresnetv2'):
-        model = InceptionResNetV2(weights='imagenet',include_top=False,input_shape=(IMG_DIM)
+        model = InceptionResNetV2(weights='imagenet',include_top=False,input_shape=IMG_DIM)
 
     if self.num_frozen_layer == -1:
       model.trainable = True

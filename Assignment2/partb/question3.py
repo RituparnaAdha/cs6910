@@ -1,5 +1,5 @@
 import wandb
-from question1_2 import train
+from assign1_q3 import train
 
 if __name__ == '__main__':
     sweep_config = {
@@ -34,11 +34,12 @@ if __name__ == '__main__':
         'dropout':{
             'values':[0.1,0.2,0.3]
         },
-        {
-            'l2':[0,0.01,0.001,0.005,0.05]
+        'l2':{
+            'values':[0,0.01,0.05,0.001,0.005]
         }
-
+        
     }
     }
     sweep_id = wandb.sweep(sweep_config)
+    wandb.agent(sweep_id, function=train)
     wandb.finish()
