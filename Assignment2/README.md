@@ -117,7 +117,7 @@ python question3.py
 
 ```
 
-The code for question 3 can be found [here](https://github.com/RituparnaAdha/cs6910/blob/main/Assignment2/partb/question3.py).
+The code for question 3 can be found [here](https://github.com/RituparnaAdha/cs6910/blob/main/Assignment2/partb/question3.py). The wandb visualisation for question 1 can be found [here](https://wandb.ai/rituparna_adha/uncategorized?workspace=user-rituparna_adha)
 
 ## Evaluate
 
