@@ -53,7 +53,7 @@ Define a CNN class which contain a train function to return CNN model
 - configure parameters to make use of sweep functionality provided by wandb.ai
 - call sweep function provived by wandb to get its sweep id
 - call wandb agent to run our model on different  combinations of parameters.
-The code for question 2 can be found [here](https://github.com/RituparnaAdha/cs6910/blob/main/Assignment2/parta/partaq2.py). The wandb visualisation for question 1 can be found [here](https://wandb.ai/shreekanti/test_assignment2_test_run?workspace=user-shreekanti).
+The code for question 2 can be found [here](https://github.com/RituparnaAdha/cs6910/blob/main/Assignment2/parta/partaq2.py). The wandb visualisation for question 2 can be found [here](https://wandb.ai/shreekanti/test_assignment2_test_run?workspace=user-shreekanti).
 ## Question 4
 Solution Approach:
 - Prepare the test dataset
