@@ -43,7 +43,7 @@ Solution Approach:
 - Implemented wandb sweep to find best parameters and analyse various aspects
 - To run the sweep code follow:
 ```
-cd Assignment2
+cd Assignment3
 cd partb
 python question3.py
 
@@ -55,8 +55,23 @@ Solution Approach:
 The code for question 4 can be found [here](https://github.com/RituparnaAdha/cs6910/blob/main/Assignment3/Dl3_q4.ipynb).
 
 The instructions to run are instructed before every cell in the notebook
+## Question 5
+Solution Approach:
+  
 
+ - Define encoder and decoder
+ - Get state of encoder and result of decoder
+ - Define Custom layer which take Query and value to calculate attention
+ - Use state of encoder as Query and result of decoder to calculate the attention weight and result
+ - Concatenate the result of decoder and weight of attention layer
+ - Use concatenated output to add a dense layer
+ - Return the attention weight and  result of dense layer as output 
  
+ The code for question 5 can be found [here](https://github.com/RituparnaAdha/cs6910/tree/main/Assignment3/Question5_6).
+ The instructions to run are instructed before every cell in the notebook.
+ ## Question 6
+  The code for question 5 can be found [here]()
+ The instructions to run are instructed before every cell in the notebook.
 ## Report
 
 The report for this assignment can be found  [here](https://wandb.ai/rituparna_adha/uncategorized/reports/Assignment-2--Vmlldzo2MDYyOTA).
