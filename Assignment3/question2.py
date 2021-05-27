@@ -10,7 +10,7 @@ if __name__ == '__main__':
         },
         'parameters': {
         'epoch': {
-            'values': [50,80]
+            'values': [50,30]
         },
         'hidden_layer_size':{
             'values': [128,256]
@@ -28,14 +28,14 @@ if __name__ == '__main__':
             'values': [1,2,3,4]
         },
         'beam_size':{
-            'values':[1,3]
+            'values':[1,3,6]
         },
         'dropout':{
-            'values':[0.2,0.3]
+            'values':[0.2,0.3,0]
         },
         
     }
     }
-    sweep_id = wandb.sweep(sweep_config,entity="assignment3",project='assignment3-part1')
-    wandb.agent(sweep_id, function=begin)
+    sweep_id = wandb.sweep(sweep_config,entity="assignment3",project='assignment3-part1')#"6lzq4pe8"
+    wandb.agent(sweep_id, function=begin,entity="assignment3",project='assignment3-part1')
     wandb.finish()
