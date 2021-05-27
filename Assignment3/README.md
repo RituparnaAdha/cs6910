@@ -67,10 +67,10 @@ Solution Approach:
  - Use concatenated output to add a dense layer
  - Return the attention weight and  result of dense layer as output 
  
- The code for question 5 can be found [here](https://github.com/RituparnaAdha/cs6910/tree/main/Assignment3/Question5_6).
+ The code for question 5 can be found [here](https://github.com/RituparnaAdha/cs6910/blob/main/Assignment3/Question5_6/ques5_6.py).
  The instructions to run are instructed before every cell in the notebook.
  ## Question 6
-  The code for question 5 can be found [here]()
+  The code for question 6 can be found [here](https://github.com/RituparnaAdha/cs6910/blob/main/Assignment3/Question5_6/ques5_6.py)
  The instructions to run are instructed before every cell in the notebook.
 ## Report
 
