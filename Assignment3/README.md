@@ -54,11 +54,11 @@ Solution Approach:
 
 The code for question 4 can be found [here](https://github.com/RituparnaAdha/cs6910/blob/main/Assignment3/Dl3_q4.ipynb).
 
-The instructions to run are instructed before every cell in the notebook
+The instructions to run are instructed before every cell in the notebook.
+For seeing .csv file , use google sheets.
 ## Question 5
 Solution Approach:
   
-
  - Define encoder and decoder
  - Get state of encoder and result of decoder
  - Define Custom layer which take Query and value to calculate attention
@@ -69,9 +69,12 @@ Solution Approach:
  
  The code for question 5 can be found [here](https://github.com/RituparnaAdha/cs6910/blob/main/Assignment3/Question5_6/ques5_6.py).
  The instructions to run are instructed before every cell in the notebook.
+ For seeing .csv file , use google sheets.
+ Hindi font used for plotting can be found [here](https://github.com/RituparnaAdha/cs6910/blob/main/Assignment3/Question5_6/VesperLibre-Regular.ttf).
  ## Question 6
   The code for question 6 can be found [here](https://github.com/RituparnaAdha/cs6910/blob/main/Assignment3/Question5_6/ques5_6.py)
  The instructions to run are instructed before every cell in the notebook.
+  Hindi font used for plotting can be found [here](https://github.com/RituparnaAdha/cs6910/blob/main/Assignment3/Question5_6/VesperLibre-Regular.ttf).
 ## Report
 
 The report for this assignment can be found  [here](https://wandb.ai/rituparna_adha/uncategorized/reports/Assignment-2--Vmlldzo2MDYyOTA).
